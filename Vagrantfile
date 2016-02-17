@@ -44,7 +44,8 @@ def install_prereq
   return<<-INNER
 setenforce 0
 rpm -i /vagrant/jdk-8u72-linux-x64.rpm
-rpm -Uvh /vagrant/mesosphere-el-repo-7-1.noarch.rpm
+#rpm -Uvh /vagrant/mesosphere-el-repo-7-1.noarch.rpm
+rpm -Uvh http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
   INNER
 end
 
