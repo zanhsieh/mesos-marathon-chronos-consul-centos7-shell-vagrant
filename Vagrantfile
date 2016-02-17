@@ -43,10 +43,15 @@ end
 def install_prereq
   return<<-INNER
 setenforce 0
-#rpm -i /vagrant/jdk-8u73-linux-x64.rpm
-rpm -Uvh https://mirror.its.sfu.ca/mirror/CentOS-Third-Party/NSG/common/x86_64/jdk-8u73-linux-x64.rpm
-#rpm -Uvh /vagrant/mesosphere-el-repo-7-1.noarch.rpm
-rpm -Uvh http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
+yum -y install wget
+if [ ! -f "/vagrant/jdk-8u73-linux-x64.rpm" ]; then
+  wget https://mirror.its.sfu.ca/mirror/CentOS-Third-Party/NSG/common/x86_64/jdk-8u73-linux-x64.rpm -P /vagrant
+fi
+rpm -Uvh /vagrant/jdk-8u73-linux-x64.rpm
+if [ ! -f "/vagrant/jdk-8u73-linux-x64.rpm" ]; then
+  wget http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm -P /vagrant
+fi
+rpm -Uvh /vagrant/mesosphere-el-repo-7-1.noarch.rpm
   INNER
 end
 
@@ -176,6 +181,12 @@ cp /etc/mesos-master/hostname /etc/chronos/conf/hostname
 systemctl restart marathon && systemctl enable marathon
 systemctl restart chronos && systemctl enable chronos
 adduser consul
+if [ ! -f "/vagrant/consul_0.6.3_linux_amd64.zip" ]; then
+  wget https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_linux_amd64.zip -P /vagrant
+fi
+if [ ! -f "/vagrant/consul_0.6.3_web_ui.zip" ]; then
+  wget https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_web_ui.zip -P /vagrant
+fi
 unzip /vagrant/consul_0.6.3_linux_amd64.zip -d /usr/bin
 unzip /vagrant/consul_0.6.3_web_ui.zip -d /home/consul
 mkdir -p /var/consul /etc/consul.d/server
@@ -212,6 +223,9 @@ EOF
 systemctl restart docker && systemctl enable docker
 systemctl restart mesos-slave && systemctl enable mesos-slave
 adduser consul
+if [ ! -f "/vagrant/consul_0.6.3_linux_amd64.zip" ]; then
+  wget https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_linux_amd64.zip -P /vagrant
+fi
 unzip /vagrant/consul_0.6.3_linux_amd64.zip -d /usr/bin
 mkdir -p /var/consul /etc/consul.d/client
 chown consul:consul /var/consul
